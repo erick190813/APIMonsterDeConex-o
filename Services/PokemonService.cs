@@ -12,12 +12,15 @@ namespace ApiMonsterDeConexao.Services
 
         public PokemonService()
         {
-            // Força a variável de ambiente diretamente na memória da aplicação, 
-            // contornando qualquer cache ou erro do Windows.
-            // ATENÇÃO: Confirme se o nome do arquivo abaixo é EXATAMENTE o que está na sua pasta.
-            Environment.SetEnvironmentVariable("GOOGLE_APPLICATION_CREDENTIALS", @"C:\Chaves_Dev\apimonsterdeconexao-firebase-adminsdk-fbsvc-77bdc406a2.json");
+            // Verifica se o arquivo local existe. Se existir, estamos na sua máquina (Dev).
+            // Se não existir, estamos na nuvem do Google e ele usa a permissão nativa!
+            string caminhoLocal = @"C:\Chaves_Dev\apimonsterdeconexao-firebase-adminsdk-fbsvc-77bdc406a2.json";
 
-            // Instancia a conexão com o banco de dados
+            if (System.IO.File.Exists(caminhoLocal))
+            {
+                Environment.SetEnvironmentVariable("GOOGLE_APPLICATION_CREDENTIALS", caminhoLocal);
+            }
+
             _db = FirestoreDb.Create(ProjectId);
         }
         public async Task<PokemonResponseDto> ProcessAndSaveAsync(PokemonCreateDto data)
