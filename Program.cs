@@ -1,8 +1,6 @@
 using ApiMonsterDeConexao.Interfaces;
 using ApiMonsterDeConexao.Middlewares;
 using ApiMonsterDeConexao.Services;
-using APIMonsterDeConexão.Middlewares;
-using APIMonsterDeConexão.Services;
 using Microsoft.OpenApi.Models;
 using System.Reflection;
 
@@ -19,11 +17,11 @@ builder.Services.AddSwaggerGen(options =>
     {
         Title = "ApiMonsterDeConexao - Ingestion & Storage Core",
         Version = "v1",
-        Description = "Microsserviço de processamento de volumes de dados globais da GeoData Insight. Captura feeds do App 1, realiza triagem e persiste em nuvem.",
+        Description = "Microsserviço de processamento de volumes de dados. Captura feeds do App 1, realiza triagem e persiste em nuvem.",
         Contact = new OpenApiContact
         {
             Name = "Erick Silva Fernandes de Araujo",
-            Email = "erick.fernandes@geodatainsight.com"
+            Email = "ericksfa07@gmail.com"
         }
     });
 

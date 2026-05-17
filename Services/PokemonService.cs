@@ -1,13 +1,27 @@
 ﻿using ApiMonsterDeConexao.DTOs;
 using ApiMonsterDeConexao.Interfaces;
+using Google.Cloud.Firestore;
 
 namespace ApiMonsterDeConexao.Services
 {
     public class PokemonService : IPokemonService
     {
+        private readonly FirestoreDb _db;
+
+        private const string ProjectId = "apimonsterdeconexao";
+
+        public PokemonService()
+        {
+            // Força a variável de ambiente diretamente na memória da aplicação, 
+            // contornando qualquer cache ou erro do Windows.
+            // ATENÇÃO: Confirme se o nome do arquivo abaixo é EXATAMENTE o que está na sua pasta.
+            Environment.SetEnvironmentVariable("GOOGLE_APPLICATION_CREDENTIALS", @"C:\Chaves_Dev\apimonsterdeconexao-firebase-adminsdk-fbsvc-77bdc406a2.json");
+
+            // Instancia a conexão com o banco de dados
+            _db = FirestoreDb.Create(ProjectId);
+        }
         public async Task<PokemonResponseDto> ProcessAndSaveAsync(PokemonCreateDto data)
         {
-            // Abstração de regras de validação estrutural
             var response = new PokemonResponseDto
             {
                 Id = Guid.NewGuid().ToString().Substring(0, 8).ToUpper(),
@@ -27,27 +41,65 @@ namespace ApiMonsterDeConexao.Services
                 CompetitiveRole = data.CompetitiveRole
             };
 
-            // Implementação nativa da persistência Cloud Firestore entra neste ponto estratégico
-            return await Task.FromResult(response);
+            // Criando o documento NoSQL como um Dicionário (Evita "sujar" o DTO com atributos de banco)
+            var pokemonDocument = new Dictionary<string, object>
+            {
+                { "Id", response.Id },
+                { "DataColeta", Timestamp.FromDateTime(response.DataColeta) }, // O Firebase usa um tipo próprio de data
+                { "Altura", response.Altura },
+                { "Peso", response.Peso },
+                { "Tipos", response.Tipos },
+                { "SpriteUrl", response.SpriteUrl },
+                { "HP", response.HP },
+                { "Attack", response.Attack },
+                { "Defense", response.Defense },
+                { "SpAttack", response.SpAttack },
+                { "SpDefense", response.SpDefense },
+                { "Speed", response.Speed },
+                { "BaseStatTotal", response.BaseStatTotal },
+                { "CompetitiveRole", response.CompetitiveRole }
+            };
+
+            // Salva na coleção "PokemonsProcessados"
+            await _db.Collection("PokemonsProcessados").Document(response.Id).SetAsync(pokemonDocument);
+
+            return response;
         }
 
         public async Task<IEnumerable<PokemonResponseDto>> GetAllProcessedDataAsync()
         {
-            // Mock estruturado para testes imediatos de integração do App 3 (WPF Dashboards)
-            var mockData = new List<PokemonResponseDto>
+            // Busca todos os documentos da coleção no Firebase
+            var snapshot = await _db.Collection("PokemonsProcessados").GetSnapshotAsync();
+            var lista = new List<PokemonResponseDto>();
+
+            foreach (var document in snapshot.Documents)
             {
-                new PokemonResponseDto
+                if (document.Exists)
                 {
-                    Id = "MONSTER-7A8B",
-                    DataColeta = DateTime.UtcNow,
-                    EnviadoParaNuvem = true,
-                    Altura = 0.7, Peso = 6.9,
-                    Tipos = new List<string> { "Grass", "Poison" },
-                    HP = 45, Attack = 49, Defense = 49, BaseStatTotal = 318,
-                    CompetitiveRole = "Special Sweeper"
+                    var dict = document.ToDictionary();
+                    lista.Add(new PokemonResponseDto
+                    {
+                        Id = dict["Id"].ToString(),
+                        DataColeta = ((Timestamp)dict["DataColeta"]).ToDateTime(),
+                        EnviadoParaNuvem = true,
+                        Altura = Convert.ToDouble(dict["Altura"]),
+                        Peso = Convert.ToDouble(dict["Peso"]),
+                        // O Firestore salva listas como 'List<object>', precisamos converter de volta para string
+                        Tipos = ((List<object>)dict["Tipos"]).Select(x => x.ToString()).ToList(),
+                        SpriteUrl = dict["SpriteUrl"].ToString(),
+                        HP = Convert.ToInt32(dict["HP"]),
+                        Attack = Convert.ToInt32(dict["Attack"]),
+                        Defense = Convert.ToInt32(dict["Defense"]),
+                        SpAttack = Convert.ToInt32(dict["SpAttack"]),
+                        SpDefense = Convert.ToInt32(dict["SpDefense"]),
+                        Speed = Convert.ToInt32(dict["Speed"]),
+                        BaseStatTotal = Convert.ToInt32(dict["BaseStatTotal"]),
+                        CompetitiveRole = dict["CompetitiveRole"].ToString()
+                    });
                 }
-            };
-            return await Task.FromResult(mockData);
+            }
+
+            return lista;
         }
     }
 }

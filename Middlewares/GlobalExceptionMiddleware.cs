@@ -1,6 +1,48 @@
-﻿namespace APIMonsterDeConexão.Middlewares
+﻿using System.Net;
+using System.Text.Json;
+
+namespace ApiMonsterDeConexao.Middlewares
 {
     public class GlobalExceptionMiddleware
     {
+        private readonly RequestDelegate _next;
+        private readonly ILogger<GlobalExceptionMiddleware> _logger;
+
+        public GlobalExceptionMiddleware(RequestDelegate next, ILogger<GlobalExceptionMiddleware> logger)
+        {
+            _next = next;
+            _logger = logger;
+        }
+
+        public async Task InvokeAsync(HttpContext httpContext)
+        {
+            try
+            {
+                await _next(httpContext);
+            }
+            catch (Exception ex)
+            {
+                _logger.LogError(ex, $"[FALHA INTERNA - APIMONSTERDECONEXAO]: {ex.Message}");
+                await HandleExceptionAsync(httpContext, ex);
+            }
+        }
+
+        private static Task HandleExceptionAsync(HttpContext context, Exception exception)
+        {
+            context.Response.ContentType = "application/json";
+            context.Response.StatusCode = (int)HttpStatusCode.InternalServerError;
+
+            var errorPayload = new
+            {
+                StatusCode = context.Response.StatusCode,
+                Timestamp = DateTime.UtcNow,
+                Message = "Falha no barramento interno da ApiMonsterDeConexao. A requisição falhou mas o contrato HTTP foi preservado.",
+                SystemErrorCode = "MONSTER_CORE_FAIL",
+                TechnicalDetails = exception.Message
+            };
+
+            var jsonOptions = new JsonSerializerOptions { PropertyNamingPolicy = JsonNamingPolicy.CamelCase };
+            return context.Response.WriteAsync(JsonSerializer.Serialize(errorPayload, jsonOptions));
+        }
     }
 }
