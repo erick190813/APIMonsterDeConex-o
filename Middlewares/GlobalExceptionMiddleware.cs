@@ -1,7 +1,7 @@
 ﻿using System.Net;
 using System.Text.Json;
 
-namespace ApiMonsterDeConexao.Middlewares
+namespace PokeApiBackend.Middlewares
 {
     public class GlobalExceptionMiddleware
     {
@@ -22,7 +22,7 @@ namespace ApiMonsterDeConexao.Middlewares
             }
             catch (Exception ex)
             {
-                _logger.LogError(ex, $"[FALHA INTERNA - APIMONSTERDECONEXAO]: {ex.Message}");
+                _logger.LogError(ex, $"[FALHA INTERNA - POKEAPI]: {ex.Message}");
                 await HandleExceptionAsync(httpContext, ex);
             }
         }
@@ -36,8 +36,8 @@ namespace ApiMonsterDeConexao.Middlewares
             {
                 StatusCode = context.Response.StatusCode,
                 Timestamp = DateTime.UtcNow,
-                Message = "Falha no barramento interno da ApiMonsterDeConexao. A requisição falhou mas o contrato HTTP foi preservado.",
-                SystemErrorCode = "MONSTER_CORE_FAIL",
+                Message = "Falha no barramento interno do PokeApi Backend. A requisição falhou.",
+                SystemErrorCode = "POKEAPI_CORE_FAIL",
                 TechnicalDetails = exception.Message
             };
 

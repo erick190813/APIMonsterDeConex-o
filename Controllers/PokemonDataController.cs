@@ -1,8 +1,8 @@
-﻿using ApiMonsterDeConexao.DTOs;
-using ApiMonsterDeConexao.Interfaces;
+﻿using PokeApiBackend.DTOs;
+using PokeApiBackend.Interfaces;
 using Microsoft.AspNetCore.Mvc;
 
-namespace ApiMonsterDeConexao.Controllers
+namespace PokeApiBackend.Controllers
 {
     [ApiController]
     [Route("api/[controller]")]
@@ -19,7 +19,7 @@ namespace ApiMonsterDeConexao.Controllers
         /// Realiza a ingestão de dados brutos filtrados originados do App 1 (WPF).
         /// </summary>
         /// <param name="data">Payload contendo os atributos mapeados da PokeAPI.</param>
-        /// <returns>Objeto contendo o ID gerado pelo barramento da ApiMonsterDeConexao.</returns>
+        /// <returns>Objeto contendo o ID gerado pelo barramento da PokeApi Backend.</returns>
         /// <response code="201">Sucesso. Retorna o contrato completo processado e pronto para exibição.</response>
         /// <response code="400">Falha estrutural. O payload enviado pelas ViewModels do App 1 está nulo ou corrompido.</response>
         /// <remarks>
@@ -76,9 +76,9 @@ namespace ApiMonsterDeConexao.Controllers
         {
             return Ok(new
             {
-                mensagem = "API GeoData Insight operante no MonsterASP!",
+                mensagem = "PokeApi Backend a funcionar perfeitamente!",
                 status = 200,
-                ambiente = "MonsterASP Serverless Mock"
+                ambiente = "Google Cloud Run (Serverless)"
             });
         }
     }

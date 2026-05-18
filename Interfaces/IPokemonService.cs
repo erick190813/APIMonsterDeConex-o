@@ -1,6 +1,6 @@
-﻿using ApiMonsterDeConexao.DTOs;
+﻿using PokeApiBackend.DTOs;
 
-namespace ApiMonsterDeConexao.Interfaces
+namespace PokeApiBackend.Interfaces
 {
     public interface IPokemonService
     {

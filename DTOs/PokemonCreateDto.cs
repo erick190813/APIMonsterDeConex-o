@@ -1,4 +1,4 @@
-﻿namespace ApiMonsterDeConexao.DTOs
+﻿namespace PokeApiBackend.DTOs
 {
     public class PokemonCreateDto
     {

@@ -1,6 +1,6 @@
-using ApiMonsterDeConexao.Interfaces;
-using ApiMonsterDeConexao.Middlewares;
-using ApiMonsterDeConexao.Services;
+using PokeApiBackend.Interfaces;
+using PokeApiBackend.Middlewares;
+using PokeApiBackend.Services;
 using Microsoft.OpenApi.Models;
 using System.Reflection;
 
@@ -15,9 +15,9 @@ builder.Services.AddSwaggerGen(options =>
 {
     options.SwaggerDoc("v1", new OpenApiInfo
     {
-        Title = "ApiMonsterDeConexao - Ingestion & Storage Core",
+        Title = "PokeApi Backend - Ingestion & Storage Core",
         Version = "v1",
-        Description = "Microsserviço de processamento de volumes de dados. Captura feeds do App 1, realiza triagem e persiste em nuvem.",
+        Description = "Microsserviço de processamento de dados da PokeAPI. Recebe os dados do App 1 e persiste no Google Cloud Firestore.",
         Contact = new OpenApiContact
         {
             Name = "Erick Silva Fernandes de Araujo",
@@ -39,7 +39,7 @@ var app = builder.Build();
 app.UseSwagger();
 app.UseSwaggerUI(c =>
 {
-    c.SwaggerEndpoint("/swagger/v1/swagger.json", "ApiMonsterDeConexao v1");
+    c.SwaggerEndpoint("/swagger/v1/swagger.json", "PokeApi Backend v1");
     c.RoutePrefix = string.Empty;
 });
 

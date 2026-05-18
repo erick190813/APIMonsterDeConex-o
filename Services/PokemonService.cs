@@ -1,8 +1,8 @@
-﻿using ApiMonsterDeConexao.DTOs;
-using ApiMonsterDeConexao.Interfaces;
+﻿using PokeApiBackend.DTOs;
+using PokeApiBackend.Interfaces;
 using Google.Cloud.Firestore;
 
-namespace ApiMonsterDeConexao.Services
+namespace PokeApiBackend.Services
 {
     public class PokemonService : IPokemonService
     {
@@ -12,23 +12,20 @@ namespace ApiMonsterDeConexao.Services
 
         public PokemonService()
         {
-            try
-            {
-                string diretorioBase = AppDomain.CurrentDomain.BaseDirectory;
-                string caminhoJson = System.IO.Path.Combine(diretorioBase, "apimonsterdeconexao-firebase-adminsdk-fbsvc-77bdc406a2.json");
+            string diretorioBase = AppDomain.CurrentDomain.BaseDirectory;
+            // Atualize para o nome limpo que você deu ao ficheiro JSON no Passo 1
+            string caminhoJson = System.IO.Path.Combine(diretorioBase, "firebase-credentials.json");
 
-                if (System.IO.File.Exists(caminhoJson))
-                {
-                    Environment.SetEnvironmentVariable("GOOGLE_APPLICATION_CREDENTIALS", caminhoJson);
-                }
-
-                _db = FirestoreDb.Create(ProjectId); // O erro fatal acontece aqui no MonsterASP
-            }
-            catch (Exception ex)
+            if (System.IO.File.Exists(caminhoJson))
             {
-                // Se der erro (como no MonsterASP), a API engole a exceção e continua ligando!
-                Console.WriteLine($"Bypass de Firebase ativado. Motivo: {ex.Message}");
+                Environment.SetEnvironmentVariable("GOOGLE_APPLICATION_CREDENTIALS", caminhoJson);
             }
+            else
+            {
+                Console.WriteLine("AVISO: Ficheiro de credenciais do Firebase não encontrado localmente.");
+            }
+
+            _db = FirestoreDb.Create(ProjectId);
         }
         public async Task<PokemonResponseDto> ProcessAndSaveAsync(PokemonCreateDto data)
         {

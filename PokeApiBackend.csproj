@@ -9,11 +9,11 @@
 	</PropertyGroup>
 
 	<ItemGroup>
-	  <Content Remove="apimonsterdeconexao-firebase-adminsdk-fbsvc-77bdc406a2.json" />
+	  <Content Remove="firebase-credentials.json" />
 	</ItemGroup>
 
 	<ItemGroup>
-	  <AdditionalFiles Include="apimonsterdeconexao-firebase-adminsdk-fbsvc-77bdc406a2.json">
+	  <AdditionalFiles Include="firebase-credentials.json">
 	    <CopyToOutputDirectory>Always</CopyToOutputDirectory>
 	  </AdditionalFiles>
 	</ItemGroup>

@@ -5,17 +5,16 @@ EXPOSE 8080
 FROM mcr.microsoft.com/dotnet/sdk:8.0 AS build
 WORKDIR /src
 
-COPY ["APIMonsterDeConexao.csproj", "./"]
-RUN dotnet restore "APIMonsterDeConexao.csproj"
+COPY ["PokeApiBackend.csproj", "./"]
+RUN dotnet restore "PokeApiBackend.csproj"
 
 COPY . .
-# AQUI ESTAVA O ERRO: Adicionamos o "AS publish" nesta etapa
-RUN dotnet build "APIMonsterDeConexao.csproj" -c Release -o /app/build
+RUN dotnet build "PokeApiBackend.csproj" -c Release -o /app/build
+
 FROM build AS publish
-RUN dotnet publish "APIMonsterDeConexao.csproj" -c Release -o /app/publish
+RUN dotnet publish "PokeApiBackend.csproj" -c Release -o /app/publish
 
 FROM base AS final
 WORKDIR /app
 COPY --from=publish /app/publish .
-
-ENTRYPOINT ["dotnet", "APIMonsterDeConexao.dll"]
+ENTRYPOINT ["dotnet", "PokeApiBackend.dll"]

@@ -361,3 +361,6 @@ MigrationBackup/
 
 # Fody - auto-generated XML schema
 FodyWeavers.xsd
+
+echo firebase-credentials.json >> .gitignore
+git add .gitignore
