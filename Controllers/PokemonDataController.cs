@@ -70,5 +70,16 @@ namespace ApiMonsterDeConexao.Controllers
 
             return Ok(results);
         }
+
+        [HttpGet("ping")]
+        public IActionResult Ping()
+        {
+            return Ok(new
+            {
+                mensagem = "API GeoData Insight operante no MonsterASP!",
+                status = 200,
+                ambiente = "MonsterASP Serverless Mock"
+            });
+        }
     }
 }

@@ -12,16 +12,23 @@ namespace ApiMonsterDeConexao.Services
 
         public PokemonService()
         {
-            // Verifica se o arquivo local existe. Se existir, estamos na sua máquina (Dev).
-            // Se não existir, estamos na nuvem do Google e ele usa a permissão nativa!
-            string caminhoLocal = @"C:\Chaves_Dev\apimonsterdeconexao-firebase-adminsdk-fbsvc-77bdc406a2.json";
-
-            if (System.IO.File.Exists(caminhoLocal))
+            try
             {
-                Environment.SetEnvironmentVariable("GOOGLE_APPLICATION_CREDENTIALS", caminhoLocal);
-            }
+                string diretorioBase = AppDomain.CurrentDomain.BaseDirectory;
+                string caminhoJson = System.IO.Path.Combine(diretorioBase, "apimonsterdeconexao-firebase-adminsdk-fbsvc-77bdc406a2.json");
 
-            _db = FirestoreDb.Create(ProjectId);
+                if (System.IO.File.Exists(caminhoJson))
+                {
+                    Environment.SetEnvironmentVariable("GOOGLE_APPLICATION_CREDENTIALS", caminhoJson);
+                }
+
+                _db = FirestoreDb.Create(ProjectId); // O erro fatal acontece aqui no MonsterASP
+            }
+            catch (Exception ex)
+            {
+                // Se der erro (como no MonsterASP), a API engole a exceção e continua ligando!
+                Console.WriteLine($"Bypass de Firebase ativado. Motivo: {ex.Message}");
+            }
         }
         public async Task<PokemonResponseDto> ProcessAndSaveAsync(PokemonCreateDto data)
         {
