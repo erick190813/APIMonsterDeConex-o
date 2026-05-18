@@ -1,47 +1,92 @@
-# 🚀 PokeAPI - Backend de Integração (App 2)
+# 🚀 PokeAPI - Backend Core de Integração (App 2)
 
-> **"Sistemas distribuídos na prática!"** > Repositório oficial da API de processamento de dados desenvolvida para a Situação de Aprendizagem (SA) do curso Técnico em Desenvolvimento de Sistemas.
+> **"Arquitetura de microsserviços e sistemas distribuídos na prática!"**
 
-## 📖 Sobre o Projeto
+Repositório oficial da Web API de processamento e persistência de dados desenvolvida para a Situação de Aprendizagem (SA) do curso Técnico em Desenvolvimento de Sistemas (SENAI).
 
-Este projeto é o backend de um sistema integrado criado pela nossa squad para validar o fluxo de informações entre diferentes tecnologias. O objetivo foi estabelecer uma comunicação contínua e segura entre três aplicações independentes.
+---
 
-Eu fiquei responsável por arquitetar e desenvolver o **App 2**, uma Web API RESTful robusta que atua como o núcleo do sistema:
-1. Recebe os dados de Pokémons coletados pelo **App 1** (Aplicação Desktop).
-2. Processa e persiste essas informações em tempo real num banco de dados NoSQL na nuvem.
-3. Fornece relatórios estruturados em JSON para serem consumidos e exibidos no **App 3** (Painel de Análise).
+# 📖 Visão Geral do Ecossistema
 
-## 🛠️ Tecnologias e Ferramentas Utilizadas
+Este projeto não é uma aplicação isolada; ele é o coração (**Backend Core**) de um sistema integrado criado pela nossa Squad.
 
-Durante o desenvolvimento, busquei aplicar padrões de mercado e tecnologias modernas:
+O objetivo principal do ecossistema é validar o fluxo contínuo de dados entre diferentes aplicações (WPF Desktop e Nuvem), garantindo **resiliência, segurança e alta disponibilidade**.
 
-* **C# & .NET 8.0:** Framework principal para a construção da Web API.
-* **Google Cloud Firestore:** Banco de dados NoSQL em tempo real para persistência dos dados.
-* **Docker:** Para conteinerização da aplicação, garantindo o padrão "funciona na minha máquina e no servidor".
-* **Google Cloud Run (Serverless):** Plataforma de hospedagem em nuvem de alta disponibilidade.
-* **Swagger (OpenAPI):** Para documentação interativa e testes diretos dos endpoints.
+## 🧩 Estrutura do Sistema
 
-## ☁️ Decisão Arquitetural: A Migração de Infraestrutura
+O sistema completo é composto por três nós:
 
-Como estudante, um dos maiores aprendizados desta SA foi lidar com ambientes reais de produção. 
-Inicialmente, o deploy estava planejado para uma hospedagem gratuita em servidor Windows IIS. No entanto, após realizar o *troubleshooting* de diversos erros de execução (500.31, 500.38, 500.30), diagnostiquei que as limitações físicas da plataforma (como restrição drástica de RAM) e o bloqueio de portas gRPC do firewall inviabilizavam a conexão segura com o Firebase.
+### 🖥️ App 1 — Coletor Desktop WPF
+Consome a PokeAPI pública, filtra os dados brutos e realiza o envio (**Ingestão**) para o nosso Backend.
 
-Para garantir a **resiliência, escalabilidade e a entrega do projeto da squad**, tomei a decisão técnica de pivotar a hospedagem. Migrei o núcleo da API para contêineres rodando no **Google Cloud Run**. O resultado foi uma API respondendo em milissegundos, com alta disponibilidade e sem gargalos na integração! 🏆
+### ⚙️ App 2 — Web API .NET (Este Projeto)
+Recebe o tráfego do App 1, valida a estrutura, injeta metadados (como data de coleta e IDs únicos) e persiste as informações num cluster NoSQL.
 
-## 🔗 Endpoints da API
+### 📊 App 3 — Dashboard Analítico WPF
+Consome os relatórios consolidados desta API para renderizar gráficos e painéis gerenciais.
 
-A API foi documentada usando o Swagger. A interface interativa pode ser acessada adicionando `/swagger` à URL base da hospedagem no Google Cloud.
+---
 
-Principais rotas disponíveis:
+# 🛠️ Stack Tecnológico e Padrões
 
-* `GET /api/PokemonData/ping`: Rota de *Health Check* para verificar o status do servidor.
-* `POST /api/PokemonData`: Rota utilizada pelo **App 1** para enviar o payload JSON com os dados do Pokémon recém-coletado.
-* `GET /api/PokemonData/relatorios`: Rota utilizada pelo **App 3** para buscar todo o histórico de registros salvos no banco de dados.
+| Categoria | Tecnologia |
+|---|---|
+| **Backend** | C# com ASP.NET Core 8.0 |
+| **Banco de Dados** | Google Cloud Firestore (NoSQL, Serverless) |
+| **Conteinerização** | Docker (multi-stage builds) |
+| **Infraestrutura** | Google Cloud Run (PaaS escalável) |
+| **Documentação** | Swagger / OpenAPI 3.0 |
 
-## 🚀 Como rodar o projeto localmente
+## 📐 Padrões de Projeto Utilizados
 
-Para testar o projeto no seu ambiente de desenvolvimento, siga os passos:
+- Injeção de Dependência (DI)
+- DTOs (Data Transfer Objects)
+- Repository/Service Pattern
+- Middlewares Globais
 
-1. Clone este repositório:
-   ```bash
-   git clone [https://github.com/SEU-USUARIO/Sua-Repo-PokeAPI.git](https://github.com/SEU-USUARIO/Sua-Repo-PokeAPI.git)
+---
+
+# ☁️ O Desafio Arquitetural (E a Solução)
+
+Um dos maiores aprendizados deste projeto foi o **troubleshooting de infraestrutura real**.
+
+Inicialmente, o deploy da API estava planejado para um servidor Windows com IIS numa hospedagem gratuita. Durante os testes de carga, enfrentamos:
+
+- Gargalos de RAM
+- Bloqueios de firewall
+- Portas gRPC fechadas exigidas pelo Firebase
+- Erros fatais HTTP 500.30 e 500.38
+
+## 🚨 A Decisão
+
+Para garantir a entrega da Squad com padrão de mercado, foi arquitetada uma migração imediata da aplicação.
+
+A API foi:
+
+- Conteinerizada com Docker
+- Migrada para Google Cloud Run
+- Adaptada para ambiente Serverless
+
+## 🏆 Resultado
+
+- Escalonamento automático de instâncias
+- Resolução imediata de conectividade com o Firestore
+- Respostas de endpoints em milissegundos
+- Maior estabilidade e disponibilidade
+
+---
+
+# 📁 Estrutura do Projeto
+
+A organização das pastas foi pensada para garantir escalabilidade e manutenção do código.
+
+```plaintext
+📦 PokeApiBackend
+ ┣ 📂 Controllers   -> Controladores HTTP (Rotas e Status Codes)
+ ┣ 📂 DTOs          -> Data Transfer Objects
+ ┣ 📂 Interfaces    -> Contratos de abstração (IPokemonService)
+ ┣ 📂 Middlewares   -> Interceptadores de requisições
+ ┣ 📂 Services      -> Regras de negócio e Firestore
+ ┣ 📜 Dockerfile    -> Empacotamento da aplicação
+ ┣ 📜 Program.cs    -> Configuração da aplicação
+ ┗ 📜 README.md     -> Documentação do projeto
